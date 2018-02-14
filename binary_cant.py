@@ -5,6 +5,7 @@ Started 13-Feb-2018.
 """
 
 from numpy import uint64 as uint
+from word import Word
 
 
 class Cant:
@@ -19,7 +20,5 @@ class Cant:
         # A stack of stacks.
         stack = []
         for word in self.sentence:
-            if word.is_sentence():
-                stack.append
-            # sanity check
+            data = Word.disect(word)
         return ret
