@@ -2,7 +2,7 @@
 A file for the lexicon of binary cant. It will allow for translation.
 """
 
-from numpy import uint32
+from numpy import uint64 as uint
 
 
 class Lexicon:
@@ -14,8 +14,8 @@ class Lexicon:
         with open(file, 'r') as f:
             for line in f.readlines():
                 key, word = line.split(',')
-                self.lexCant[uint32(int(key))] = word
-                self.lexEng[word] = uint32(int(key))
+                self.lexCant[uint(int(key))] = word
+                self.lexEng[word] = uint(int(key))
         return
 
     def cant_to_english(self, word):
@@ -34,8 +34,8 @@ class Lexicon:
         with open('lexCanticon_default.csv') as f:
             for line in f.readlines():
                 key, word = line.split(',')
-                self.lexCant[uint32(int(key))] = word
-                self.lexEng[word] = uint32(int(key))
+                self.lexCant[uint(int(key))] = word
+                self.lexEng[word] = uint(int(key))
 
 
 if __name__ == '__main__':  # Load 'default' file and save it to the lex file.

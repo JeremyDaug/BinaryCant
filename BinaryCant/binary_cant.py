@@ -4,8 +4,7 @@ The fire for the structure of binary cant.
 Started 13-Feb-2018.
 """
 
-from numpy import uint64 as uint
-from word import Word
+from BinaryCant.word import Word
 
 
 class Cant:
