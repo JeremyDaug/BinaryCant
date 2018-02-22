@@ -124,3 +124,75 @@ def progress_flag(word: uint) -> uint:
     :return: The progress flag of the word.
     """
     return word & PROGRESS_MASK
+
+
+@sentence_meta_must_be(False)
+def recurrence_flag(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The Recurrence flag of the word.
+    """
+    return word & RECURRENCE_MASK
+
+
+@sentence_meta_must_be(False)
+def degree_flag(word: uint) -> uint:
+    """
+        :param word: The word to check.
+        :return: The degree flag of the word.
+    """
+    return word & DEGREE_MASK
+
+
+@sentence_meta_must_be(False)
+def emphasis_flag(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The emphasis flag of the word.
+    """
+    return word & EMPHASIS_MASK
+
+
+@sentence_meta_must_be(False)
+def plurality_flag(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The pluarity flag of the word
+    """
+    return word & PLURALITY_MASK
+
+
+@sentence_meta_must_be(False)
+def external_flag(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The External type of the word.
+    """
+    return word & EXTERNAL_TYPE_MASK
+
+
+@sentence_meta_must_be(False)
+def external_word(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The external native data of the word.
+    """
+    return word & EXTERNAL_WORD_MASK
+
+
+@sentence_meta_must_be(False)
+def internal_type(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The internally defined group.
+    """
+    return word & INTERNAL_TYPE_MASK
+
+
+@sentence_meta_must_be(False)
+def internal_word(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The internal word data.
+    """
+    return word & INTERNAL_WORD_MASK
