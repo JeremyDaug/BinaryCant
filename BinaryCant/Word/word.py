@@ -4,20 +4,20 @@ language needs.
 """
 
 # from typing import Optional, Union
-from BinaryCant.word_const import *
+from BinaryCant.Word.word_const import *
 from numpy import uint64 as uint
-from functools import wraps
 
 
 class FlagError(Exception):
     pass
 
 
-def flag_getter(mask: uint) -> callable:
-    return lambda word: word & mask
-
-
-sentence_meta_flag = flag_getter(SENT_META_MASK)
+def sentence_meta_flag(word: uint) -> uint:
+    """
+    :param word: The word to check.
+    :return: The flag of the word.
+    """
+    return word & SENT_META_MASK
 
 
 def sentence_meta_must_be(res: bool) -> callable:
@@ -49,6 +49,7 @@ def sentence_type_flag(word: uint) -> uint:
     :param word: Word to check.
     :return: The Metadata type flag of the word.
     """
+    print(word & SENT_TYPE_MASK)
     return word & SENT_TYPE_MASK
 
 
@@ -96,7 +97,6 @@ def in_language_flag(word: uint) -> uint:
     :return: The flag (true or false) of the word being in the language
     """
     return word & IN_LANGUAGE_MASK
-
 
 
 @sentence_meta_must_be(False)
