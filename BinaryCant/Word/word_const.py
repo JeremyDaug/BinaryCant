@@ -73,6 +73,7 @@ DEGREE_MASK           = uint(0b111 << DEGREE_SHIFT)
 EMPHASIS_MASK         = uint(0b1 << EMPHASIS_SHIFT)
 DETERMINATIVE_MASK    = uint(0b1 << DETERMINATIVE_SHIFT)
 PLURALITY_MASK        = uint(0b11 << PLURALITY_SHIFT)
+WORD_FLAG_COUNT       = uint(8)
 # External masks (for things without abstract meanings).
 EXTERNAL_WORD_FLAG    = uint(0b1 << EXTERNAL_WORD_FLAG_SHIFT)
 EXTERNAL_TYPE_MASK    = uint(0x1FFF << EXTERNAL_TYPE_SHIFT)
@@ -80,6 +81,7 @@ EXTERNAL_WORD_MASK    = uint(0xFFFFFFFF)
 # Internal word masks
 INTERNAL_TYPE_MASK    = uint(0b11 << INTERNAL_TYPE_SHIFT)
 INTERNAL_WORD_MASK    = uint(0x7FFFFFFFFFF)
+INT_EXT_MASK          = uint(0b1 << (EXTERNAL_WORD_FLAG_SHIFT+1) - 1)
 if __name__ == '__main__':
     print('------WORD MASKS------')
     print_word_bin(IN_LANGUAGE_MASK)
@@ -200,3 +202,119 @@ C_OBJECT_FLAG         = uint(0b00 << INTERNAL_TYPE_SHIFT)
 C_LOCATION_FLAG       = uint(0b01 << INTERNAL_TYPE_SHIFT)
 C_RELATION_FLAG       = uint(0b10 << INTERNAL_TYPE_SHIFT)
 C_ACTION_FLAG         = uint(0b11 << INTERNAL_TYPE_SHIFT)
+
+# tokens
+# Grammar Flags
+G_SUBJECT_TOK        = "sub"
+G_OBJECT_TOK         = "obj"
+G_TOPIC_TOK          = "top"
+G_VERB_TOK           = "ver"
+G_MODIFIER_TOK       = "mod"
+G_RELATION_TOK       = "rel"
+G_UNDEFINED_TOK_1    = "und1"
+G_UNDEFINED_TOK_2    = "und2"
+GRAMMAR_TOKENS = [G_SUBJECT_TOK,
+                  G_OBJECT_TOK,
+                  G_TOPIC_TOK,
+                  G_VERB_TOK,
+                  G_MODIFIER_TOK,
+                  G_RELATION_TOK,
+                  G_UNDEFINED_TOK_1,
+                  G_UNDEFINED_TOK_2]
+# Temporal Flags
+T_TIMELESS_TOK       = ""
+T_PAST_TOK           = "pas"
+T_PRESENT_TOK        = "pre"
+T_FUTURE_TOK         = "fut"
+TEMPORAL_TOKENS = [T_PAST_TOK,
+                   T_PRESENT_TOK,
+                   T_FUTURE_TOK]
+# Progress Flags
+P_UNPROGRESSED_TOK   = ""
+P_UNSTARTED_TOK      = "uns"
+P_IN_PROGRESS_TOK    = "pro"
+P_COMPLETE_TOK       = "com"
+PROGRESS_TOKENS = [P_UNSTARTED_TOK,
+                   P_IN_PROGRESS_TOK,
+                   P_COMPLETE_TOK]
+# Recurrence Flags
+R_NON_RECURRING_TOK  = ""
+R_IRREGULAR_TOK      = "irr"
+R_CONTINUOUS_TOK     = "con"
+R_HABITUAL_TOK       = "hab"
+RECURRENCE_TOKENS = [R_IRREGULAR_TOK,
+                     R_CONTINUOUS_TOK,
+                     R_HABITUAL_TOK]
+# Degree Flags
+D_UNSPECIFIED_TOK    = ""
+D_NONE_TOK           = "0"
+D_LEAST_TOK          = "1"
+D_LESSER_TOK         = "2"
+D_COMMON_TOK         = "3"
+D_GREATER_TOK        = "4"
+D_GREATEST_TOK       = "5"
+D_TOTAL_TOK          = "6"
+DEGREE_TOKENS = [D_NONE_TOK,
+                 D_LEAST_TOK,
+                 D_LESSER_TOK,
+                 D_COMMON_TOK,
+                 D_GREATER_TOK,
+                 D_GREATEST_TOK,
+                 D_TOTAL_TOK]
+# Emphasis Flags
+E_UNEMPHASIZED_TOK   = ""
+E_EMPHASIZED_TOK     = "!"
+# Determinative Flags
+DT_NON_SPECIFIC_TOK  = ""
+DT_SPECIFIC_TOK      = "?"
+# Plurality Flags
+PL_UNNUMBERED_TOK    = ""
+PL_SINGULAR_TOK      = "sin"
+PL_PLURAL_TOK        = "plu"
+PL_SPECIFIC_VAL_TOK  = "num"
+PLURALITY_TOKENS = [PL_SINGULAR_TOK,
+                    PL_PLURAL_TOK,
+                    PL_SPECIFIC_VAL_TOK]
+
+TOKENDICT = {G_SUBJECT_TOK: G_SUBJECT_FLAG,
+             G_OBJECT_TOK: G_OBJECT_FLAG,
+             G_TOPIC_TOK: G_TOPIC_FLAG,
+             G_VERB_TOK: G_VERB_FLAG,
+             G_MODIFIER_TOK: G_MODIFIER_FLAG,
+             G_RELATION_TOK: G_RELATION_FLAG,
+             G_UNDEFINED_TOK_1: G_UNDEFINED_FLAG_1,
+             G_UNDEFINED_TOK_2: G_UNDEFINED_FLAG_2,
+             T_TIMELESS_TOK: T_TIMELESS_FLAG,
+             T_PAST_TOK: T_PAST_FLAG,
+             T_PRESENT_TOK: T_PRESENT_FLAG,
+             T_FUTURE_TOK: T_FUTURE_FLAG,
+             P_UNPROGRESSED_TOK: P_UNPROGRESSED_FLAG,
+             P_UNSTARTED_TOK: P_UNSTARTED_FLAG,
+             P_IN_PROGRESS_TOK: P_IN_PROGRESS_FLAG,
+             P_COMPLETE_TOK: P_COMPLETE_FLAG,
+             R_NON_RECURRING_TOK: R_NON_RECURRING_FLAG,
+             R_IRREGULAR_TOK: R_IRREGULAR_FLAG,
+             R_CONTINUOUS_TOK: R_CONTINUOUS_FLAG,
+             R_HABITUAL_TOK: R_HABITUAL_FLAG,
+             D_UNSPECIFIED_TOK: D_UNSPECIFIED_FLAG,
+             D_NONE_TOK: D_NONE_FLAG,
+             D_LEAST_TOK: D_LEAST_FLAG,
+             D_LESSER_TOK: D_LESSER_FLAG,
+             D_COMMON_TOK: D_COMMON_FLAG,
+             D_GREATER_TOK: D_GREATER_FLAG,
+             D_GREATEST_TOK: D_GREATEST_FLAG,
+             D_TOTAL_TOK: D_TOTAL_FLAG,
+             E_UNEMPHASIZED_TOK: E_UNEMPHASIZED_FLAG,
+             E_EMPHASIZED_TOK: E_EMPHASIZED_FLAG,
+             DT_NON_SPECIFIC_TOK: DT_NON_SPECIFIC_FLAG,
+             DT_SPECIFIC_TOK: DT_SPECIFIC_FLAG,
+             PL_UNNUMBERED_TOK: PL_UNNUMBERED_FLAG,
+             PL_SINGULAR_TOK: PL_SINGULAR_FLAG,
+             PL_PLURAL_TOK: PL_PLURAL_FLAG,
+             PL_SPECIFIC_VAL_TOK: PL_SPECIFIC_VAL_FLAG
+             }
+
+WORD_TYPES = ["int", "float", "rbg"]
+WORD_TYPE_DICT = {"int": 0 << EXTERNAL_TYPE_SHIFT,
+                  "float": 1 << EXTERNAL_TYPE_SHIFT,
+                  "rbg": 2 << EXTERNAL_TYPE_SHIFT}
