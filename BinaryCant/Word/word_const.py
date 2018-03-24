@@ -315,6 +315,6 @@ TOKENDICT = {G_SUBJECT_TOK: G_SUBJECT_FLAG,
              }
 
 WORD_TYPES = ["int", "float", "rbg"]
-WORD_TYPE_DICT = {"int": 0 << EXTERNAL_TYPE_SHIFT,
-                  "float": 1 << EXTERNAL_TYPE_SHIFT,
-                  "rbg": 2 << EXTERNAL_TYPE_SHIFT}
+WORD_TYPE_DICT = {"int": uint(0 << EXTERNAL_TYPE_SHIFT),
+                  "float": uint(1 << EXTERNAL_TYPE_SHIFT),
+                  "rbg": uint(2 << EXTERNAL_TYPE_SHIFT)}
