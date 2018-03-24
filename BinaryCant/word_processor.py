@@ -4,23 +4,135 @@ The fire for the structure of binary cant.
 Started 13-Feb-2018.
 """
 
-import BinaryCant.Word as w
 import BinaryCant.Word.word_const as WC
 from BinaryCant.lexicon import Lexicon
 from numpy import uint64 as uint
 import re
 from typing import List
 
+MAJOR_SYNTAX_ERROR = "Error: Invalid Syntax Word:{}, {}"
+
 
 class WordProcessor:
     """
-    A class that translates
+    A class that translates code into
     """
     lex = Lexicon('lexCant_default.csv')
 
     @staticmethod
+    def compile(words):
+        ret = []
+        # strip newlines and tabs for safety reasons.
+        words = words.replace("\n", "")
+        words = words.replace("\t", "")
+        # do regex to find a word.
+        sent_regex = re.compile("\<[a-zA-Z0-9 ,]*\>")
+        word_regex = re.compile("((\(?[^\(\)\<\>]*\)?)? *[a-zA-Z0-9]+ *\<([a-zA-Z0-9, ])+\>)+?\s*")
+        word_num = 0
+        while words:
+            words = words.strip()
+            word_match = word_regex.match(words)
+            sent_match = sent_regex.match(words)
+            # print(word_match)
+            if word_match:
+                curr_word = words[word_match.start():word_match.end()]
+                # print(curr_word)
+                words = words[word_match.end():]  # snip current word.
+                # process word_match
+                res = 0
+                try:
+                    res = WordProcessor.process_word(curr_word)
+                except SyntaxError as E:
+                    raise SyntaxError(E.msg.format(word_num))
+                ret.append(uint(res))  # put into list to process in the Cant Processor.
+            elif sent_match:
+                # get current word.
+                curr_word = words[sent_match.start():sent_match.end()]
+                # snip current word from string.
+                words = words[sent_match.end():]
+                res = 0
+                try:
+                    res = WordProcessor.process_sent_meta(curr_word)
+                except SyntaxError as E:
+                    raise SyntaxError(E.msg.format(word_num))
+                ret.append(uint(res))  # put into the list.
+            else:
+                raise SyntaxError(
+                    MAJOR_SYNTAX_ERROR
+                    .format(word_num,
+                            words.split("\n")[0])
+                )
+            # final step
+            word_num += 1
+        return ret
+
+    @staticmethod
+    def process_sent_meta(word: str) -> uint:
+        # it is sentence meta
+        ret = WC.SENT_META_TRUE_FLAG
+        # strip of whitespace
+        word = word.replace(" ", "")
+        # get flags
+        flags = word[1:-1]
+        flags = flags.split(",")
+        existing_flags = set()
+        try:
+            # go through the flags
+            for flag in flags:
+                if flag in WC.STATEMENT_TOKENS:
+                    if "SentType" in existing_flags:
+                        raise SyntaxError("{}: Too many Sentence Type flags."
+                                          .format(word))
+                    existing_flags.add("SentType")
+                    ret += WC.STATEMENT_TOKENS[flag]
+                elif flag in WC.QUERY_TOKENS:
+                    if "SentType" in existing_flags:
+                        raise SyntaxError("{}: Too many Sentence Type flags."
+                                          .format(word))
+                    existing_flags.add("SentType")
+                    ret += WC.QUERY_TOKENS[flag]
+                elif flag in WC.A_AFF_TOKENS:
+                    if "Aff" in existing_flags:
+                        raise SyntaxError("{}: Too many Affection flags."
+                                          .format(word))
+                    existing_flags.add("Aff")
+                    ret += WC.A_AFF_TOKENS[flag]
+                elif flag in WC.E_EVID_TOKENS:
+                    if "Evid" in existing_flags:
+                        raise SyntaxError("{}: Too many Evidentiality flags."
+                                          .format(word))
+                    existing_flags.add("Evid")
+                    ret += WC.E_EVID_TOKENS[flag]
+                elif flag.isdigit():
+                    if "Num" in existing_flags:
+                        raise SyntaxError("{}: Too many Evidentiality flags."
+                                          .format(word))
+                    existing_flags.add("Num")
+                    num = uint(int(flag))
+                    if num > 2**51-1:
+                        raise SyntaxError("{}: Word count too high."
+                                          .format(word))
+                    else:
+                        ret += uint(int(flag))
+                else:
+                    raise SyntaxError("{}: {} is not a valid flag."
+                                      .format(word, flag))
+            # ensure flags are there
+            if "SentType" not in existing_flags:
+                raise SyntaxError("{}: Must have a Sentence Type flag."
+                                  .format(word))
+            elif "Num" not in existing_flags:
+                raise SyntaxError("{}: Must contain word count in the word."
+                                  .format(word))
+        except SyntaxError as E:
+            raise SyntaxError("Word #{},"+E.msg)
+        return ret
+
+    @staticmethod
     def process_word(word):
         try:
+            # strip whitespace
+            word = word.replace(" ", "")
             ret = uint(0)
             regex = re.compile("(\([a-zA-Z]+\))?[A-Za-z0-9]+<(sub|obj|top|ver|mod|rel)(,(pas|pre|fut|uns|pro|com|irr|con|hab|[0-6]|\!|\?|sin|plu|num)+)*>")
             match = regex.fullmatch(word)
@@ -172,7 +284,13 @@ class WordProcessor:
         return word in WC.WORD_TYPES
 
 
+def print_list_bin(vals):
+    for val in vals:
+        WC.print_word_bin(val)
+
+
 if __name__ == "__main__":
+    # word processor
     print("greet<ver,!>")
     WC.print_word_bin(WordProcessor.process_word("greet<ver,!>"))
     print("speaker<sub,!>")
@@ -226,4 +344,32 @@ if __name__ == "__main__":
     except SyntaxError as E:
         print(E.msg)
 
-    WordProcessor.lex.save()
+    print("compile tests-----------------------------------------------")
+    # compile tests
+    vals = WordProcessor.compile("< SA, 3> (int) 123 < sub >\nstuffB <ver, pas> stuffC <obj, fut, 0>")
+    print(vals)
+    print_list_bin(vals)
+    try:
+        WordProcessor.compile("(int stuffA < sub >\n()stuffB <ver, pas> stuffC <obj, fut, 0>")
+    except SyntaxError as E:
+        print(E.msg)
+    except AttributeError as E:
+        print(E.args)
+    try:
+        WordProcessor.compile("stuffA")
+    except SyntaxError as E:
+        print(E.msg)
+    except AttributeError as E:
+        print(E.args)
+    try:
+        WordProcessor.compile("<SA, 3")
+    except SyntaxError as E:
+        print(E.msg)
+    except AttributeError as E:
+        print(E.args)
+    try:
+        WordProcessor.compile("SA, 3>")
+    except SyntaxError as E:
+        print(E.msg)
+    except AttributeError as E:
+        print(E.args)
