@@ -7,6 +7,8 @@ Started 13-Feb-2018.
 import BinaryCant.Word.word_const as WC
 from BinaryCant.lexicon import Lexicon
 from numpy import uint64 as uint
+from numpy import ndarray
+import numpy
 import re
 from typing import List
 
@@ -20,14 +22,14 @@ class WordProcessor:
     lex = Lexicon('lexCant_default.csv')
 
     @staticmethod
-    def compile(words):
+    def compile(words: str, save: bool) -> ndarray:
         ret = []
         # strip newlines and tabs for safety reasons.
         words = words.replace("\n", "")
         words = words.replace("\t", "")
         # do regex to find a word.
         sent_regex = re.compile("\<[a-zA-Z0-9 ,]*\>")
-        word_regex = re.compile("((\(?[^\(\)\<\>]*\)?)? *[a-zA-Z0-9]+ *\<([a-zA-Z0-9, ])+\>)+?\s*")
+        word_regex = re.compile("((\(?[^\(\)\<\>]*\)?)? *[a-zA-Z0-9]+ *\<([a-zA-Z0-9, \!\?])+\>)+?\s*")
         word_num = 0
         while words:
             words = words.strip()
@@ -64,7 +66,9 @@ class WordProcessor:
                 )
             # final step
             word_num += 1
-        return ret
+        if save:
+            WordProcessor.lex.save()
+        return numpy.asarray(ret, uint)
 
     @staticmethod
     def process_sent_meta(word: str) -> uint:
@@ -129,7 +133,7 @@ class WordProcessor:
         return ret
 
     @staticmethod
-    def process_word(word):
+    def process_word(word: str) -> uint:
         try:
             # strip whitespace
             word = word.replace(" ", "")
@@ -287,6 +291,10 @@ class WordProcessor:
 def print_list_bin(vals):
     for val in vals:
         WC.print_word_bin(val)
+
+def print_list_hex(vals):
+    for val in vals:
+        WC.print_word_hex(val)
 
 
 if __name__ == "__main__":
