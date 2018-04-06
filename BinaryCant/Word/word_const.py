@@ -21,25 +21,24 @@ def print_word_hex(word: uint) -> None:
 
 
 # Bit shifts for our values.
-EXTERNAL_POINTER_SHIFT   = 63
-SENT_META_SHIFT          = 62
-SENT_TYPE_SHIFT          = 61
-SENT_SUBTYPE_SHIFT       = 58
-AFF_TYPE_SHIFT           = 54
-EVID_SHIFT               = 51
-WORD_COUNT_SHIFT         = 0
+EXTERNAL_POINTER_SHIFT   = 63  # Completely outside the language
+SENT_META_SHIFT          = 62  # Language Meta Flag
+SENT_TYPE_SHIFT          = 61  # Type of sentence
+SENT_SUBTYPE_SHIFT       = 58  # sentence subtype
+AFF_TYPE_SHIFT           = 54  # affection
+EVID_SHIFT               = 51  # evidentiality
+WORD_COUNT_SHIFT         = 0  # the word count of the sentence
 # word meta masks
-IN_LANGUAGE_SHIFT        = 62
-GRAMMAR_SHIFT            = 59
-TEMPORAL_SHIFT           = 57
-PROGRESS_SHIFT           = 55
-RECURRENCE_SHIFT         = 53
-DEGREE_SHIFT             = 50
-EMPHASIS_SHIFT           = 49
-DETERMINATIVE_SHIFT      = 48
-PLURALITY_SHIFT          = 46
+GRAMMAR_SHIFT            = 60  # grammar flag for a word
+TEMPORAL_SHIFT           = 58
+PROGRESS_SHIFT           = 56
+RECURRENCE_SHIFT         = 54
+DEGREE_SHIFT             = 51
+EMPHASIS_SHIFT           = 50
+DETERMINATIVE_SHIFT      = 49
+PLURALITY_SHIFT          = 47
 # External masks (for things without abstract meanings).
-EXTERNAL_WORD_FLAG_SHIFT = 45
+EXTERNAL_WORD_FLAG_SHIFT = 46
 EXTERNAL_TYPE_SHIFT      = 32
 EXTERNAL_WORD_SHIFT      = 0
 # Internal word masks
@@ -49,6 +48,8 @@ INTERNAL_WORD_SHIFT      = 0
 # masks for the class
 # sentence masks
 ZEROED                = uint(0b0)
+EXTERNAL_POINTER_TRUE_FLAG = uint(0b1 << EXTERNAL_POINTER_SHIFT)
+EXTERNAL_POINTER_FALSE_FLAG = uint(0b0 << EXTERNAL_POINTER_SHIFT)
 SENT_META_MASK        = uint(0b1        << SENT_META_SHIFT)
 SENT_TYPE_MASK        = uint(0b01       << SENT_TYPE_SHIFT)
 SENT_SUBTYPE_MASK     = uint(0b00111    << SENT_SUBTYPE_SHIFT)
@@ -63,8 +64,8 @@ if __name__ == '__main__':
     print_word_bin(AFF_TYPE_MASK)
     print_word_bin(EVID_MASK)
     print_word_bin(WORD_COUNT_MASK)
+
 # word meta masks
-IN_LANGUAGE_MASK      = uint(0b1 << IN_LANGUAGE_SHIFT)
 GRAMMAR_MASK          = uint(0b0111 << GRAMMAR_SHIFT)
 TEMPORAL_MASK         = uint(0b11 << TEMPORAL_SHIFT)
 PROGRESS_MASK         = uint(0b11 << PROGRESS_SHIFT)
@@ -84,7 +85,6 @@ INTERNAL_WORD_MASK    = uint(0x7FFFFFFFFFF)
 INT_EXT_MASK          = uint(0b1 << (EXTERNAL_WORD_FLAG_SHIFT+1) - 1)
 if __name__ == '__main__':
     print('------WORD MASKS------')
-    print_word_bin(IN_LANGUAGE_MASK)
     print_word_bin(GRAMMAR_MASK)
     print_word_bin(TEMPORAL_MASK)
     print_word_bin(PROGRESS_MASK)
@@ -114,8 +114,8 @@ Q_EXPLAIN_FLAG        = uint(0b0110 << SENT_SUBTYPE_SHIFT)
 Q_SPECIFY_FLAG        = uint(0b0111 << SENT_SUBTYPE_SHIFT)
 # Statement flags
 STATEMENT_FLAG        = uint(0b1 << SENT_TYPE_SHIFT)
-S_ASSERTION_FLAG           = uint(0b1000 << SENT_SUBTYPE_SHIFT)
-S_DELETION_FLAG        = uint(0b1001 << SENT_SUBTYPE_SHIFT)
+S_ASSERTION_FLAG      = uint(0b1000 << SENT_SUBTYPE_SHIFT)
+S_DELETION_FLAG       = uint(0b1001 << SENT_SUBTYPE_SHIFT)
 S_UNCERTAIN_FLAG      = uint(0b1010 << SENT_SUBTYPE_SHIFT)
 S_CONDITION_FLAG      = uint(0b1011 << SENT_SUBTYPE_SHIFT)
 S_RESULT_FLAG         = uint(0b1100 << SENT_SUBTYPE_SHIFT)
@@ -150,9 +150,6 @@ E_OPINION_FLAG        = uint(0b110 << EVID_SHIFT)
 E_UNDEFINED_FLAG      = uint(0b111 << EVID_SHIFT)
 # Word Flags
 SENT_META_FALSE_FLAG  = uint(0b0 << SENT_META_SHIFT)
-# In Language Flag
-IN_LANGUAGE_FALSE     = uint(0b0 << IN_LANGUAGE_SHIFT)
-IN_LANGUAGE_TRUE      = uint(0b1 << IN_LANGUAGE_SHIFT)
 # Grammar Flags
 G_SUBJECT_FLAG        = uint(0b000 << GRAMMAR_SHIFT)
 G_OBJECT_FLAG         = uint(0b001 << GRAMMAR_SHIFT)
@@ -314,6 +311,12 @@ TOKENDICT = {G_SUBJECT_TOK: G_SUBJECT_FLAG,
              PL_SPECIFIC_VAL_TOK: PL_SPECIFIC_VAL_FLAG
              }
 
+def FIND_WORD_FLAG(val):
+    for key, value in TOKENDICT.items():
+        if val == value:
+            return key
+    raise ValueError("Key Not found")
+
 WORD_TYPES = ["int", "float", "rbg"]
 WORD_TYPE_DICT = {"int": uint(0 << EXTERNAL_TYPE_SHIFT),
                   "float": uint(1 << EXTERNAL_TYPE_SHIFT),
@@ -329,16 +332,6 @@ Q_LOCATION_TOK       = "QL"
 Q_REASONING_TOK      = "QR"
 Q_EXPLAIN_TOK        = "QE"
 Q_SPECIFY_TOK        = "QC"  # clarify
-QUERY_TOKENS = {
-    Q_SUBJECT_TOK: Q_SUBJECT_FLAG,
-    Q_OBJECT_TOK: Q_OBJECT_FLAG,
-    Q_VERB_TOK: Q_VERB_FLAG,
-    Q_TIME_TOK: Q_TIME_FLAG,
-    Q_LOCATION_TOK: Q_LOCATION_FLAG,
-    Q_REASONING_TOK: Q_REASONING_FLAG,
-    Q_EXPLAIN_TOK: Q_EXPLAIN_FLAG,
-    Q_SPECIFY_TOK: Q_SPECIFY_FLAG
-}
 # Statement flags
 STATEMENT_TOK        = "S"
 S_ASSERTION_TOK      = "SA"
@@ -349,17 +342,6 @@ S_RESULT_TOK         = "SR"
 S_IMPERATIVE_TOK     = "SI"
 S_EXCLAMATORY_TOK    = "S!"
 S_UNDEFINED_TOK      = "S?"
-STATEMENT_TOKENS = {
-    S_ASSERTION_TOK: S_ASSERTION_FLAG,
-    S_DELETION_TOK: S_DELETION_FLAG,
-    S_UNCERTAIN_TOK: S_UNCERTAIN_FLAG,
-    S_CONDITION_TOK: S_CONDITION_FLAG,
-    S_RESULT_TOK: S_RESULT_FLAG,
-    S_IMPERATIVE_TOK: S_IMPERATIVE_FLAG,
-    S_EXCLAMATORY_TOK: S_EXCLAMATORY_FLAG,
-    S_UNDEFINED_TOK: S_UNDEFINED_FLAG
-}
-
 # Affections
 A_HONEST_TOK         = ""
 A_DISHONEST_TOK      = "lie"
@@ -373,11 +355,37 @@ A_BENEVOLENT_TOK     = "ben"
 A_MALICE_TOK         = "mal"
 A_PAIN_TOK           = "pai"
 A_PLEASURE_TOK       = "ple"
-# A_UNDEF_TOK_0        = "000"
-# A_UNDEF_TOK_1        = "111"
-# A_UNDEF_TOK_2        = "222"
-# A_UNDEF_TOK_3        = "333"
-A_AFF_TOKENS = {
+A_UNDEF_TOK_0        = "000"
+A_UNDEF_TOK_1        = "111"
+A_UNDEF_TOK_2        = "222"
+A_UNDEF_TOK_3        = "333"
+# Evidentiality
+E_OBSERVATION_TOK    = ""
+E_QUOTATION_TOK      = "quo"
+E_EXPECTATION_TOK    = "exp"
+E_CONCLUSION_TOK     = "con"
+E_GENERALIZATION_TOK = "gen"
+E_POSTULATE_TOK      = "pos"
+E_OPINION_TOK        = "opi"
+E_UNDEFINED_TOK      = "und"
+
+SENT_FLAG_DICT = {
+    Q_SUBJECT_TOK: Q_SUBJECT_FLAG,
+    Q_OBJECT_TOK: Q_OBJECT_FLAG,
+    Q_VERB_TOK: Q_VERB_FLAG,
+    Q_TIME_TOK: Q_TIME_FLAG,
+    Q_LOCATION_TOK: Q_LOCATION_FLAG,
+    Q_REASONING_TOK: Q_REASONING_FLAG,
+    Q_EXPLAIN_TOK: Q_EXPLAIN_FLAG,
+    Q_SPECIFY_TOK: Q_SPECIFY_FLAG,
+    S_ASSERTION_TOK: S_ASSERTION_FLAG,
+    S_DELETION_TOK: S_DELETION_FLAG,
+    S_UNCERTAIN_TOK: S_UNCERTAIN_FLAG,
+    S_CONDITION_TOK: S_CONDITION_FLAG,
+    S_RESULT_TOK: S_RESULT_FLAG,
+    S_IMPERATIVE_TOK: S_IMPERATIVE_FLAG,
+    S_EXCLAMATORY_TOK: S_EXCLAMATORY_FLAG,
+    S_UNDEFINED_TOK: S_UNDEFINED_FLAG,
     A_DISHONEST_TOK: A_DISHONEST_FLAG,
     A_HAPPY_TOK: A_HAPPY_FLAG,
     A_SAD_TOK: A_SAD_FLAG,
@@ -388,22 +396,11 @@ A_AFF_TOKENS = {
     A_BENEVOLENT_TOK: A_BENEVOLENT_FLAG,
     A_MALICE_TOK: A_MALICE_FLAG,
     A_PAIN_TOK: A_PAIN_FLAG,
-    A_PLEASURE_TOK: A_PLEASURE_FLAG  # ,
-    # A_UNDEF_TOK_0        = "000",
-    # A_UNDEF_TOK_1        = "111",
-    # A_UNDEF_TOK_2        = "222",
-    # A_UNDEF_TOK_3        = "333",
-}
-# Evidentiality
-E_OBSERVATION_TOK    = ""
-E_QUOTATION_TOK      = "quo"
-E_EXPECTATION_TOK    = "exp"
-E_CONCLUSION_TOK     = "con"
-E_GENERALIZATION_TOK = "gen"
-E_POSTULATE_TOK      = "pos"
-E_OPINION_TOK        = "opi"
-E_UNDEFINED_TOK      = "und"
-E_EVID_TOKENS = {
+    A_PLEASURE_TOK: A_PLEASURE_FLAG,
+    A_UNDEF_TOK_0: A_UNDEF_FLAG_0,
+    A_UNDEF_TOK_1: A_UNDEF_FLAG_1,
+    A_UNDEF_TOK_2: A_UNDEF_FLAG_2,
+    A_UNDEF_TOK_3: A_UNDEF_FLAG_3,
     E_OBSERVATION_TOK: E_OBSERVATION_FLAG,
     E_QUOTATION_TOK: E_QUOTATION_FLAG,
     E_EXPECTATION_TOK: E_EXPECTATION_FLAG,
@@ -413,3 +410,29 @@ E_EVID_TOKENS = {
     E_OPINION_TOK: E_OPINION_FLAG,
     E_UNDEFINED_TOK: E_UNDEFINED_FLAG
 }
+
+
+def FIND_SENT_FLAG(val):
+    for key, value in TOKENDICT.items():
+        if val == value:
+            return key
+    raise ValueError("Key Not found")
+
+
+# External Value Types
+ET_CONST = uint(0b0000000000000 << EXTERNAL_TYPE_SHIFT)
+ET_INT   = uint(0b0000000000001 << EXTERNAL_TYPE_SHIFT)
+ET_FLOAT = uint(0b0000000000010 << EXTERNAL_TYPE_SHIFT)
+ET_RGB   = uint(0b0000000000011 << EXTERNAL_TYPE_SHIFT)
+
+EX_VAL_TYPE_DICT = {
+    'const': ET_CONST,
+    'int': ET_INT,
+    'float': ET_FLOAT,
+    'rgb': ET_RGB
+}
+
+def FIND_EXT_WORD_TYPE(val):
+    for key, value in EX_VAL_TYPE_DICT.items():
+        if val == value:
+            return key

@@ -2,10 +2,9 @@ from numpy import uint64 as uint
 from numpy import ndarray
 import numpy
 from BinaryCant.word_processor import WordProcessor
-from BinaryCant.word_processor import print_list_bin, print_list_hex
 from typing import List
-from PIL import Image, ImageDraw
 from math import sqrt, ceil
+from BinaryCant.cant_processor import CantProcessor
 
 
 class CodeProcessor:
@@ -16,6 +15,7 @@ class CodeProcessor:
         print(data)
         ret = WordProcessor.compile(data, True)
         # Send to Cant Processor
+        # ret = CantProcessor.read()
         return ret
 
     @staticmethod
@@ -29,17 +29,16 @@ class CodeProcessor:
     def output_to_file(data: ndarray, output_file: str):
         numpy.save(output_file, data)
 
-
     @staticmethod
     def make_file_size(val: int) -> int:
         ret = ceil(sqrt(val))
         return int(ret)
 
     @staticmethod
-    def read_from_bin(file_name):
+    def read_from_bin(file_name: str) -> ndarray:
         data = numpy.load(file_name)
-        print("----------")
         print(data)
+        return data
 
 
 if __name__ == "__main__":

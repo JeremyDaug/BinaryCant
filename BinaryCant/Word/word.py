@@ -12,11 +12,25 @@ class FlagError(Exception):
     pass
 
 
+def flag_val(val: str) -> uint:
+    if val in TOKENDICT:
+        return TOKENDICT[val]
+    elif val in SENT_FLAG_DICT:
+        return SENT_FLAG_DICT[val]
+    else:
+        raise FlagError(val + "  is not a valid flag.")
+
+
+def external_pointer_flag(word: uint) -> uint:
+    return word & EXTERNAL_POINTER_TRUE_FLAG
+
+
 def sentence_meta_flag(word: uint) -> uint:
     """
     :param word: The word to check.
     :return: The flag of the word.
     """
+    print(word & SENT_META_MASK)
     return word & SENT_META_MASK
 
 
@@ -88,15 +102,6 @@ def word_count(word: uint) -> uint:
     :raise: Value error if not sentence metadata.
     """
     return word & WORD_COUNT_MASK
-
-
-@sentence_meta_must_be(False)
-def in_language_flag(word: uint) -> uint:
-    """
-    :param word: The word to check.
-    :return: The flag (true or false) of the word being in the language
-    """
-    return word & IN_LANGUAGE_MASK
 
 
 @sentence_meta_must_be(False)

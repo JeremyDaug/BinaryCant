@@ -1,5 +1,5 @@
 self<sub> greet<ver, pre> listener<obj>
-<SA, 2> self<sub> tall<ver>
-<SA, 3> self<sub> listener<sub> friend<rel>
-<SU, 4> self<sub> (int)1000<obj> person<sub, num> run<ver, hab, !> enjoy<rel, 5>
-<QV, 3> listener<sub> run<ver, hab> enjoy<rel>
+<SA, 2> self<sub> tall<ver> </>
+<SA, 3> self<sub> listener<sub> friend<rel> </>
+<SU, 4> self<sub> (int)1000<obj> person<sub, num> run<ver, hab, !> enjoy<rel, 5> </>
+<QV, 3> listener<sub> run<ver, hab> enjoy<rel> </>

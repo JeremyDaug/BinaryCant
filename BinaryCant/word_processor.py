@@ -30,11 +30,13 @@ class WordProcessor:
         # do regex to find a word.
         sent_regex = re.compile("\<[a-zA-Z0-9 ,]*\>")
         word_regex = re.compile("((\(?[^\(\)\<\>]*\)?)? *[a-zA-Z0-9]+ *\<([a-zA-Z0-9, \!\?])+\>)+?\s*")
+        sent_end = re.compile("\<\!\>")
         word_num = 0
         while words:
             words = words.strip()
             word_match = word_regex.match(words)
             sent_match = sent_regex.match(words)
+            # sent_end_match = sent_end.match(words)
             # print(word_match)
             if word_match:
                 curr_word = words[word_match.start():word_match.end()]
@@ -291,6 +293,7 @@ class WordProcessor:
 def print_list_bin(vals):
     for val in vals:
         WC.print_word_bin(val)
+
 
 def print_list_hex(vals):
     for val in vals:

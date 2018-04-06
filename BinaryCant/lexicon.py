@@ -10,7 +10,7 @@ rand.seed()
 
 
 class Lexicon:
-    def __init__(self, file):
+    def __init__(self, file='lexCant_default.csv'):
         self.lexCant = {}  # Cant to english
         self.lexEng = {}  # english to Cant
         if not file:
