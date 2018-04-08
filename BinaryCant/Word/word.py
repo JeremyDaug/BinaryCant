@@ -201,3 +201,21 @@ def internal_word(word: uint) -> uint:
     :return: The internal word data.
     """
     return word & INTERNAL_WORD_MASK
+
+def process_external_word(word, val_type) -> uint:
+    type_switch = {ET_INT: process_int_type,
+                   ET_FLOAT: process_float_type,
+                   ET_RGB: process_rbg_type}
+    return type_switch[val_type](word)
+
+def process_int_type(word: str) -> uint:
+    ret = uint(int(word))
+    return ret
+
+def process_float_type(word: str) -> uint:
+    ret = uint(0)
+    return ret
+
+def process_rbg_type(word: str) -> uint:
+    ret = uint(0)
+    return ret

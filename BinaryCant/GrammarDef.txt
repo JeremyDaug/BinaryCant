@@ -1,3 +1,0 @@
-S -> M WS SE
-WS -> /e | W WS | S
-T -> WS S ?
