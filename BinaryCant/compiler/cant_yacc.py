@@ -1,12 +1,12 @@
 import ply.yacc as yacc
-from BinaryCant.cant_lex import lexer, tokens
-from BinaryCant.Word.word import FlagError, process_external_word
 from numpy import uint64 as uint
 from numpy import ndarray
 import numpy
 from typing import List
 from BinaryCant.Word import word_const as WC
-from BinaryCant.lexicon import Lexicon
+from BinaryCant.compiler.lexicon import Lexicon
+from BinaryCant.Word.word_types import to_word_processors, to_bin_processors
+from BinaryCant.compiler.cant_lex import tokens
 
 debug = False
 lexicon = Lexicon()
@@ -21,10 +21,10 @@ class collector:
     def add(self, val: str, word: bool):
         if val in self.found:
             if word:
-                raise FlagError("{} already exists in the word.".format(
+                raise SyntaxError("{} already exists in the word.".format(
                     WC.FIND_WORD_FLAG(val)))
             else:
-                raise FlagError("{} already exists in the word.".format(
+                raise SyntaxError("{} already exists in the word.".format(
                     WC.FIND_SENT_FLAG(val)))
         self.vals.append(val)
         self.found.add(val)
@@ -88,6 +88,7 @@ def p_sentence_short(p):
 # meta : < META , sent_mods >
 def p_meta_long(p):
     'meta : LANGLE META COMMA sent_mods RANGLE'
+    print(p[4].vals)
     p[0] = p[2] + uint(sum(p[4].vals))
     if debug:
         print('meta : LANGLE META COMMA sent_mods RANGLE')
@@ -146,14 +147,14 @@ def p_word_short(p):
 # word : TYPE WORD < GRAMMAR_FLAG >
 def p_typed_word_s(p):
     "word : TYPE WORD LANGLE GRAMMAR_FLAG RANGLE"
-    p[0] = p[1] + process_external_word(p[2], p[1]) + p[4]
+    p[0] = p[1] + to_bin_processors[WC.WORD_TYPE.find_key(p[1])](p[2]) + p[4]
     if debug:
         print("word : TYPE WORD LANGLE GRAMMAR_FLAG RANGLE")
 
 
 def p_typed_word_l(p):
     "word : TYPE WORD LANGLE GRAMMAR_FLAG COMMA affixes RANGLE"
-    p[0] = p[1] + p[2] + p[4] + sum(p[6].vals)
+    p[0] = p[1] + to_bin_processors(p[1], p[2]) + p[4] + sum(p[6].vals)
     if debug:
         print("word : TYPE WORD LANGLE GRAMMAR_FLAG COMMA affixes RANGLE")
 
@@ -162,6 +163,7 @@ def p_typed_word_l(p):
 # affixes : AFFIX
 def p_affixes_short(p):
     'affixes : AFFIX'
+    # if
     p[0] = collector(p[1])
     if debug:
         print('affixes : AFFIX')
@@ -182,8 +184,20 @@ def p_error(p):
 
 
 def save(file: str, data: List[uint]):
-    out = ndarray(data, uint)
+    out = numpy.asarray(data, uint)
     numpy.save(file, out)
+
+
+def compile(file_in: str, file_out: str = None) -> ndarray:
+    s = ''
+    with open(file_in, 'r') as file:
+        s = file.read()
+    result = parser.parse(s)
+    result = numpy.asarray(result, uint)
+    print(result)
+    if file_out:
+        numpy.save(file_out, result)
+    return result
 
 
 parser = yacc.yacc()
@@ -195,4 +209,6 @@ if __name__ == "__main__":
         s = file.read()
     print(s)
     result = parser.parse(s, debug=True)
-    print(result)
+    final = numpy.asarray(result, uint)
+    numpy.save('out', final)
+    print(final)

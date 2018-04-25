@@ -40,7 +40,6 @@ class Lexicon:
         with open('lexCant_default.csv') as f:
             for line in f.readlines():
                 key, word = line.split(',')
-                key, word = line.split(',')
                 key = uint(int(key))
                 self.lexCant[uint(int(key))] = word
                 self.lexEng[word] = uint(int(key))
@@ -52,7 +51,7 @@ class Lexicon:
         return word in self.lexCant
 
     def eng_add(self, word: str) -> uint:
-        val = rand.randint(0, WC.INT_EXT_MASK)
+        val = rand.randint(0, WC.UNTYPED_WORD_MASK)
         while val in self.lexCant:  # find an open value.
             val += 1
         self.lexCant[uint(val)] = word

@@ -1,14 +1,20 @@
 import ply.lex as lex
-from BinaryCant.Word.word import flag_val
-from BinaryCant.lexicon import Lexicon
+from BinaryCant.compiler.lexicon import Lexicon
 import BinaryCant.Word.word_const as WC
-from numpy import uint64 as uint
-
+from BinaryCant.Word.word_types import types_regex
 
 L = Lexicon()
 debug = False
 SymTable = dict()
 
+# get affixes for regex
+affixes = WC.TEMPORAL.key_regex() + '|'
+affixes += WC.PROGRESS.key_regex() + '|'
+affixes += WC.RECURRENCE.key_regex() + '|'
+affixes += WC.DEGREE.key_regex() + '|'
+affixes += WC.EMPHASIS.key_regex() + '|'
+affixes += WC.DETERMINATIVE.key_regex() + '|'
+affixes += WC.PLURALITY.key_regex()
 
 # tokens
 tokens = (
@@ -56,43 +62,38 @@ def t_RANGLE(t):
 
 
 def t_TYPE(t):
-    r'\((int|float|rgb)\)'
     if debug:
         print(t)
-    t.value = WC.EX_VAL_TYPE_DICT[t.value[1:t.value.find(')')]]
+    t.value = WC.WORD_TYPE.keys[t.value[1:t.value.find(')')]]
     return t
 
 
 # Regular expresions with actions
-def t_AFFIX(t):
-    r'(pas|pre|fut|uns|pro|com|irr|con|hab|[0-6](?=(>|,|\s))|!|\?|sin|plu|num)'
+def t_AFFIX(t):  # dynamically made
     if debug:
         print(t)
-    t.value = flag_val(t.value)
+    t.value = WC.word_affixes(t.value)
     return t
 
 
 def t_GRAMMAR_FLAG(t):
-    r'(sub|obj|top|ver|mod|rel)'
     if debug:
         print(t)
-    t.value = flag_val(t.value)
+    t.value = WC.GRAMMAR.keys[t.value]
     return t
 
 
 def t_SENT_MOD(t):
-    r'lie|hap|sad|fea|ang|ant|sur|ben|mal|pai|ple|quo|exp|con|gen|pos|opi'
     if debug:
         print(t)
-    t.value = flag_val(t.value)
+    t.value = WC.sent_affixes(t.value)
     return t
 
 
 def t_META(t):
-    r'QS|QO|QV|QT|QL|QR|QE|QC|SA|SD|SU|SC|SR|SI|S!|S\?'
     if debug:
         print(t)
-    t.value = flag_val(t.value)
+    t.value = WC.SENTENCE_TYPES.keys[t.value]
     return t
 
 
@@ -130,12 +131,20 @@ def t_error(t):
     t.lexer.skip(1)
 
 
+# dynamic regex strings
+
+t_TYPE.__doc__ = r'\(({})\)'.format(types_regex)
+t_AFFIX.__doc__ = r'{}'.format(affixes)
+t_GRAMMAR_FLAG.__doc__ = r'{}'.format(WC.GRAMMAR.key_regex())
+sentence_mods = WC.AFFECTIONS.key_regex() + '|' + WC.EVIDENTIALITY.key_regex()
+t_SENT_MOD.__doc__ = r'{}'.format(sentence_mods)
+t_META.__doc__ = r'{}'.format(WC.SENTENCE_TYPES.key_regex())
+
 # build the lexer
 lexer = lex.lex()
 
 
 if __name__ == '__main__':
-    test_data = ''
     with open('test_cant.can', 'r') as f:
         test_data = f.read()
     lexer.input(test_data)
@@ -144,4 +153,4 @@ if __name__ == '__main__':
         tok = lexer.token()
         if not tok:
             break
-        # print(tok)
+        print(tok)
