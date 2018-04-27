@@ -4,7 +4,7 @@ import BinaryCant.Word.word_const as WC
 from BinaryCant.Word.word_types import types_regex
 
 L = Lexicon()
-debug = False
+debug = True
 SymTable = dict()
 
 # get affixes for regex
@@ -64,36 +64,31 @@ def t_RANGLE(t):
 def t_TYPE(t):
     if debug:
         print(t)
-    t.value = WC.WORD_TYPE.keys[t.value[1:t.value.find(')')]]
     return t
 
 
 # Regular expresions with actions
-def t_AFFIX(t):  # dynamically made
+def t_AFFIX(t):  # dynamically made, covers word affixes
     if debug:
         print(t)
-    t.value = WC.word_affixes(t.value)
     return t
 
 
 def t_GRAMMAR_FLAG(t):
     if debug:
         print(t)
-    t.value = WC.GRAMMAR.keys[t.value]
     return t
 
 
 def t_SENT_MOD(t):
     if debug:
         print(t)
-    t.value = WC.sent_affixes(t.value)
     return t
 
 
 def t_META(t):
     if debug:
         print(t)
-    t.value = WC.SENTENCE_TYPES.keys[t.value]
     return t
 
 
@@ -145,7 +140,7 @@ lexer = lex.lex()
 
 
 if __name__ == '__main__':
-    with open('test_cant.can', 'r') as f:
+    with open('../test_cant.can', 'r') as f:
         test_data = f.read()
     lexer.input(test_data)
 

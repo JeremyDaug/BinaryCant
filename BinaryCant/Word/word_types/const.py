@@ -23,7 +23,7 @@ def load_constants():
 def save_constants():
     with open(const_file, 'w') as file:
         for word, val in word_to_bin.items():
-            file.write(word+','+val+'\n')
+            file.write(str(word)+','+str(val)+'\n')
 
 
 def process_word(word: str) -> uint:

@@ -13,19 +13,25 @@ lexicon = Lexicon()
 
 
 class collector:
-    def __init__(self, val):
+    def __init__(self, val: uint, sent: bool):
+        print('collector')
+        print(val)
+        print(sent)
         self.vals = [val]
         self.found = set()
-        self.found.add(val)
+        self.found.add(WC.word_value_grouped_in(val, sent))
 
-    def add(self, val: str, word: bool):
-        if val in self.found:
+    def add(self, val: uint, word: bool):
+        print('add',val)
+        cat = WC.word_value_grouped_in(val, not word)
+        print(cat)
+        if cat in self.found:
             if word:
                 raise SyntaxError("{} already exists in the word.".format(
-                    WC.FIND_WORD_FLAG(val)))
+                    cat))
             else:
                 raise SyntaxError("{} already exists in the word.".format(
-                    WC.FIND_SENT_FLAG(val)))
+                    cat))
         self.vals.append(val)
         self.found.add(val)
 
@@ -88,7 +94,6 @@ def p_sentence_short(p):
 # meta : < META , sent_mods >
 def p_meta_long(p):
     'meta : LANGLE META COMMA sent_mods RANGLE'
-    print(p[4].vals)
     p[0] = p[2] + uint(sum(p[4].vals))
     if debug:
         print('meta : LANGLE META COMMA sent_mods RANGLE')
@@ -115,7 +120,7 @@ def p_sent_mods_long(p):
 # sent_mods : SENT_MOD
 def p_sent_mods_short(p):
     'sent_mods : SENT_MOD'
-    p[0] = collector(p[1])
+    p[0] = collector(p[1], True)
     if debug:
         print('sent_mods : SENT_MOD')
 
@@ -163,8 +168,10 @@ def p_typed_word_l(p):
 # affixes : AFFIX
 def p_affixes_short(p):
     'affixes : AFFIX'
-    # if
-    p[0] = collector(p[1])
+    p[0] = collector(p[1], False)
+    print('affix')
+    print(p[0].found)
+    print(p[0].vals)
     if debug:
         print('affixes : AFFIX')
 
@@ -173,6 +180,9 @@ def p_affixes_short(p):
 def p_affixes_long(p):
     'affixes : affixes COMMA AFFIX'
     p[0] = p[1]
+    print('affixes')
+    print(p[0].found)
+    print(p[0].vals)
     p[0].add(p[3], True)
     if debug:
         print('affixes : affixes COMMA AFFIX')
@@ -194,7 +204,7 @@ def compile(file_in: str, file_out: str = None) -> ndarray:
         s = file.read()
     result = parser.parse(s)
     result = numpy.asarray(result, uint)
-    print(result)
+    # print(result)
     if file_out:
         numpy.save(file_out, result)
     return result
