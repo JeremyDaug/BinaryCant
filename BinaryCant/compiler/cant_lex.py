@@ -140,7 +140,7 @@ lexer = lex.lex()
 
 
 if __name__ == '__main__':
-    with open('../test_cant.can', 'r') as f:
+    with open('test_cant.can', 'r') as f:
         test_data = f.read()
     lexer.input(test_data)
 

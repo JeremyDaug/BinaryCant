@@ -1,0 +1,102 @@
+Tokens
+FileStart <-
+
+Grammar
+S <- FileStart FileEnd
+  |  FileStart
+
+
+Binary logic
+    (X snip ending, Y arbitrary value.)
+    Inside language 	- 0YYY YYYY YYYY YYYY
+        Sentence Metadata No  	- 00YY YYYY YYYY YYYY
+            Grammar flags
+                Subject	- 0000 0YYY YYYY YYYY
+                Object	- 0000 1YYY YYYY YYYY
+                Topic	- 0001 0YYY YYYY YYYY
+                Verb	- 0001 1YYY YYYY YYYY
+                Modifier 	- 0010 0YYY YYYY YYYY
+                Relation	- 0010 1YYY YYYY YYYY
+                [Empty]	- 0011 0YYY YYYY YYYY
+                [Empty]	- 0011 1YYY YYYY YYYY
+            Temporal Aspect
+                Timeless	- 00YY Y00Y YYYY YYYY
+                Past	- 00YY Y01Y YYYY YYYY
+                Present	- 00YY Y10Y YYYY YYYY
+                Future	- 00YY Y11Y YYYY YYYY
+            Progression/Completeness
+                Unprogressed	- 00YY YYY0 0YYY YYYY
+                Unstarted	- 00YY YYY0 1YYY YYYY
+                In progress	- 00YY YYY1 0YYY YYYY
+                Complete	- 00YY YYY1 1YYY YYYY
+            Recurrence
+                Non-recurring	- 00YY YYYY Y00Y YYYY
+                Irregular	- 00YY YYYY Y01Y YYYY
+                Continuous	- 00YY YYYY Y10Y YYYY
+                Habitual	- 00YY YYYY Y11Y YYYY
+            Degree/Intensity
+                Unspecified	- 00YY YYYY YYY0 00YY
+                None/Non-existant	- 00YY YYYY YYY0 01YY
+                Minimal/Insignificant	- 00YY YYYY YYY0 10YY
+                Small/Little	- 00YY YYYY YYY0 11YY
+                Medium/Neutral	- 00YY YYYY YYY1 00YY
+                Large/Significant	- 00YY YYYY YYY1 01YY
+                Maximal/Almost Complete	- 00YY YYYY YYY1 10YY
+                Total/Absolute	- 00YY YYYY YYY1 11YY
+            Emphasis
+                Unemphasized 	- 00YY YYYY YYYY YY0Y
+                Emphasized 	- 00YY YYYY YYYY YY1Y
+            Determinative
+                Nonspecific (a/an)	- 00YY YYYY YYYY YYY0
+                Specific (the)	- 00YY YYYY YYYY YYY1
+            Plurality
+                Unnumbered - 00YY
+                Singular - 01YY
+                Plural (specific) - 10YY
+                Plural (nonspecific) - 11YY
+
+
+        Sentence Metadata Yes -	- 01YY YYYY YYYY YYYY
+            Sentence Type
+                Query         	- 010Y YYYY YYYY YYYY
+                    Subject (Who)    	- 0100 00YY YYYY YYYY
+                    Object (Whom)    	- 0100 01YY YYYY YYYY
+                    Clarify (What)   	- 0100 10YY YYYY YYYY
+                    Time (When)      	- 0100 11YY YYYY YYYY
+                    Location (Where) 	- 0101 00YY YYYY YYYY
+                    Reasoning (Why)  	- 0101 01YY YYYY YYYY
+                    Explain (How)     	- 0101 10YY YYYY YYYY
+                    Specify (Which)  	- 0101 11YY YYYY YYYY
+                Statement---- 	- 011Y YYYY YYYY YYYY
+                    Fact	- 0110 00YY YYYY YYYY
+                    Fiction	- 0110 01YY YYYY YYYY
+                    Uncertain   	- 0110 10YY YYYY YYYY
+                    Condition   	- 0110 11YY YYYY YYYY
+                    Result      	- 0111 00YY YYYY YYYY
+                    Imperative  	- 0111 01YY YYYY YYYY
+                    Exclamatory 	- 0111 10YY YYYY YYYY
+                    [Empty]     	- 0111 11YY YYYY YYYY
+            Affection
+                Honest (Neutral)	- 01YY YY00 00YY YYYY
+                Dishonest	- 01YY YY00 01YY YYYY
+                Happy	- 01YY YY00 10YY YYYY
+                Sad	- 01YY YY00 11YY YYYY
+                Fear	- 01YY YY01 10YY YYYY
+                Anger	- 01YY YY01 11YY YYYY
+                Anticipation	- 01YY YY10 00YY YYYY
+                Surprise	- 01YY YY10 01YY YYYY
+                Benevolent	- 01YY YY10 10YY YYYY
+                Malice	- 01YY YY10 11YY YYYY
+                Pain	- 01YY YY11 00YY YYYY
+                Pleasue	- 01YY YY11 01YY YYYY
+                [Empty]	- 01YY YY11 10YY YYYY
+                [Empty]	- 01YY YY11 11YY YYYY
+            Evidentiality
+                Observation (Direct)	- 01YY YYYY YY00 0YYY
+                Hearsay (Quotation)	- 01YY YYYY YY00 1YYY
+                Expectation (assumption)	- 01YY YYYY YY01 0YYY
+                Conclusion (Based on evidence)	- 01YY YYYY YY01 1YYY
+                Generalization	- 01YY YYYY YY10 0YYY
+                Postulate (Theory)	- 01YY YYYY YY10 1YYY
+                Opinion	- 01YY YYYY YY11 0YYY
+                [Empty]	- 01YY YYYY YY11 1YYY

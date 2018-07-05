@@ -15,13 +15,17 @@ class Lexicon:
         self.lexEng = {}  # english to Cant
         if not file:
             return
-        with open(file, 'r') as f:
-            for line in f.readlines():
-                key, word = line.split(',')
-                key = uint(int(key))
-                word = word.strip()
-                self.lexCant[key] = word
-                self.lexEng[word] = key
+        try:
+            with open(file, 'r') as f:
+                for line in f.readlines():
+                    key, word = line.split(',')
+                    key = uint(int(key))
+                    word = word.strip()
+                    self.lexCant[key] = word
+                    self.lexEng[word] = key
+        except FileNotFoundError:
+            with open(file, 'w') as f:
+                pass
         return
 
     def cant_to_english(self, word):
