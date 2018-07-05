@@ -1,7 +1,0 @@
-<>
-self<sub> greet<ver, pre> listener<obj>
-<SA> self<sub> tall<ver> </>
-<SA, lie> self<sub> listener<sub> friend<rel> </>
-<SU> self<sub> (int)1000<obj> person<sub, num> run<ver, hab, !> enjoy<rel, 5> </>
-<QV, lie> listener<sub> run<ver, hab> enjoy<rel> </>
-</>
