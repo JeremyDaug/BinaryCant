@@ -1,9 +1,3 @@
-Tokens
-FileStart <-
-
-Grammar
-S <- FileStart FileEnd
-  |  FileStart
 
 
 Binary logic

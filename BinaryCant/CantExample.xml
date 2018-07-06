@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE cant SYSTEM "cant.dtd">
+
+<cant id="Test1" author="jeremy">
+    <sentence src="123" type="assertion" affect="honest" evidence="observation">
+        <word grammar="object" text="greet" tense="present" completion="unstarted" recurrence="irregular"
+              degree="6" emphasis="true" determinative="false" plurality="unnumbered"/>
+        <word grammar="subject" tense="present" completion="unstarted" recurrence="irregular"
+              degree="3" emphasis="true" determinative="false" plurality="unnumbered">greet</word>
+        <ext grammar="relation" type="file" src="test.txt" completion="completed" recurrence="continuous"
+            degree="2" emphasis="false" determinative="true" plurality="plural"/>
+        <word type="int" grammar="subject">1001</word>
+        <word grammar="subject"/>
+    </sentence>
+    <sentence type="assertion"/>
+</cant>

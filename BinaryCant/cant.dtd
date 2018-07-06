@@ -1,0 +1,40 @@
+<!ELEMENT cant (sentence)*>
+<!ATTLIST cant
+        id ID #REQUIRED
+        author CDATA #REQUIRED
+        dict CDATA "default.csv">
+<!ELEMENT sentence (word|ext)*>
+<!ATTLIST sentence
+        src CDATA #IMPLIED
+        type (assertion|deletion|condition|result|imperative|exclamatory|uncertain|
+                querysubject|queryobject|queryverb|querytime|querylocation|queryreasoning|
+                queryexplanation|queryspecify) #REQUIRED
+        affect (honest|dishonest|happy|sad|fear|anger|anticipation|surprise|benevolent
+                |malice|pain|pleasure) #IMPLIED
+        evidence (observation|hearsay|expectation|conclusion|generalization|postulate|opinion) #IMPLIED>
+<!ELEMENT word ANY>
+<!ATTLIST word
+        text CDATA #IMPLIED
+        type CDATA #IMPLIED
+        grammar (subject|object|topic|verb|modifier|relation|fusion) #REQUIRED
+        completion (unprogressed|unstarted|progressing|completed) #IMPLIED
+        degree (0|1|2|3|4|5|6|none) #IMPLIED
+        determinative (true|false) #IMPLIED
+        emphasis (true|false) #IMPLIED
+        plurality (unnumbered|singular|plural|numbered) #IMPLIED
+        number CDATA #IMPLIED
+        recurrence (unrecurring|irregular|continuous|habitual) #IMPLIED
+        tense (untensed|past|present|future) #IMPLIED>
+<!ELEMENT ext ANY>
+<!ATTLIST ext
+        type CDATA #REQUIRED
+        src CDATA #REQUIRED
+        grammar (subject|object|topic|verb|modifier|relation|fusion) #REQUIRED
+        completion (unprogressed|unstarted|progressing|completed) #IMPLIED
+        degree (0|1|2|3|4|5|6|none) #IMPLIED
+        determinative (true|false) #IMPLIED
+        emphasis (true|false) #IMPLIED
+        plurality (unnumbered|singular|plural|numbered) #IMPLIED
+        number CDATA #IMPLIED
+        recurrence (unrecurring|irregular|continuous|habitual) #IMPLIED
+        tense (untensed|past|present|future) #IMPLIED>
